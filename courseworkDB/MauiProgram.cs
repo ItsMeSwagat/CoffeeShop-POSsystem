@@ -23,8 +23,9 @@ namespace courseworkDB
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif      
-            builder.Services.AddScoped<CoffeeService>();
+            
             builder.Services.AddScoped<AuthenticationService>();
+            builder.Services.AddScoped<ReportService>();
             builder.Services.AddSingleton<CoffeeService>(sp =>
             {
                 var coffeeService = new CoffeeService();
@@ -39,7 +40,8 @@ namespace courseworkDB
             });
             builder.Services.AddSingleton<OrderService>(sp =>
             {
-                var orderService = new OrderService();
+                var coffeeService = new CoffeeService();
+                var orderService = new OrderService(coffeeService);
                 orderService.LoadData(); // Load data when the service is instantiated
                 return orderService;
             });

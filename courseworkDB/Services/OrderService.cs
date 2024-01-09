@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+
 
 namespace courseworkDB.Services
 {
     public class OrderService
     {
+        private readonly CoffeeService coffeeService;
+
+        public OrderService(CoffeeService coffeeService)
+        {
+            this.coffeeService = coffeeService ?? throw new ArgumentNullException(nameof(coffeeService));
+        }
+
         public class Order
         {
             public Guid OrderId { get; set; }
@@ -32,20 +35,20 @@ namespace courseworkDB.Services
                     OrderId = orderId,
                     OrderDate = DateTime.Now,
                     CustomerUsername = customerUsername,
-                    
+
                     Items = new List<CoffeeService.CartItem>(cartItems),
-                    TotalPrice = cartItems.Sum(item => item.TotalPrice)
+                    TotalPrice = cartItems.Sum(item => item.GrandTotal)
                 };
 
                 Orders.Add(order);
 
-                // You may want to perform additional processing here (e.g., sending order details to the kitchen, updating inventory, etc.)
+
 
                 SaveData();
             }
             else
             {
-                // Handle an empty cart
+
             }
         }
 

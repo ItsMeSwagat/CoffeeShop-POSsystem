@@ -1,0 +1,147 @@
+﻿@page "/generatereport"
+@using MudBlazor
+@using courseworkDB.Services
+
+@inject ReportService ReportService
+@inject OrderService OrderService
+@inject CoffeeService CoffeeService
+@inject ISnackbar Snackbar
+
+<h3 class=" p-3">Generate Report</h3>
+
+<div class=" w-100 h-100 d-flex gap-3 justify-content-center align-items-center">
+
+    <div class=" d-flex flex-column gap-2 justify-content-center px-5" style=" width:25rem; height:20rem; background-color: aquamarine">
+        <h3 class=" p-1">Daily Report</h3>
+        <label for="dailyDate">Select Date:</label>
+        <input type="date" id="dailyDate" @bind="selectedDate" style=" height:2.5rem;" />
+        <MudButton Color="Color.Tertiary" type="submit" Variant="Variant.Filled" @onclick="GenerateDailyReport">Generate Daily Report</MudButton>
+    </div>
+
+    <div class="d-flex flex-column gap-2 justify-content-center px-5" style=" width:25rem; height:20rem; background-color: aquamarine">
+        <h3 class=" p-1">Monthly Report</h3>
+        <label for="startDate">Select Start Date:</label>
+        <input type="date" id="startDate" @bind="startDate" style=" height:2.5rem;" />
+        <label for="endDate">Select End Date:</label>
+        <input type="date" id="endDate" @bind="endDate" style=" height:2.5rem;" />
+
+        <MudButton Color="Color.Tertiary" type="submit" Variant="Variant.Filled" @onclick="GenerateMonthlyReport">Generate Monthly Report</MudButton>
+    </div>
+</div>
+
+@code {
+    
+    DateTime selectedDate = DateTime.Now;
+    DateTime startDate = DateTime.Now;
+    DateTime endDate = DateTime.Now;
+    decimal totalSales = 0;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    private void HandleDateChanged(DateTime value) => selectedDate = value;
+
+    private void HandleStartDateChanged(DateTime value) => startDate = value;
+
+    private void HandleEndDateChanged(DateTime value) => endDate = value;
+
+   
+    
+    private void GenerateDailyReport()
+    {
+        totalSales = OrderService.Orders
+            .Where(order => order.OrderDate.Date == selectedDate.Date)
+            .Sum(order => order.TotalPrice);
+
+        ReportService.GenerateDailyReport(selectedDate, totalSales, GetTopFiveCoffeesDaily(), GetTopFiveAddInsDaily());
+        successMessage = "Daily Report Successfully Generated. Thank you";
+        Snackbar.Add(successMessage, Severity.Success);
+    }
+
+    private void GenerateMonthlyReport()
+    {
+        totalSales = OrderService.Orders
+            .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
+            .Sum(order => order.TotalPrice);
+
+        ReportService.GenerateMonthlyReport(startDate, endDate, totalSales, GetTopFiveCoffeesMonthly(), GetTopFiveAddInsMonthly());
+        successMessage = "Monthly Report Successfully Generated. Thank you";
+        Snackbar.Add(successMessage, Severity.Success);
+    }
+
+    private List<CoffeeStatistics> GetTopFiveCoffeesDaily()
+    {
+        var coffeeTypeCounts = OrderService.Orders
+            .Where(order => order.OrderDate.Date == selectedDate.Date)
+            .SelectMany(order => order.Items.Select(item => item.CoffeeType.Name))
+            .GroupBy(coffeeTypeName => coffeeTypeName)
+            .Select(group => new { CoffeeTypeName = group.Key, Count = group.Count() })
+            .OrderByDescending(group => group.Count)
+            .Take(5);
+
+        var topFiveCoffees = coffeeTypeCounts.Select(coffeeTypeCount => new CoffeeStatistics
+            {
+                CoffeeName = coffeeTypeCount.CoffeeTypeName,
+                TotalQuantitySold = coffeeTypeCount.Count
+            }).ToList();
+
+        return topFiveCoffees;
+    }
+
+    private List<AddInStatistics> GetTopFiveAddInsDaily()
+    {
+        var addInCounts = OrderService.Orders
+            .Where(order => order.OrderDate.Date == selectedDate.Date)
+            .SelectMany(order => order.Items.SelectMany(item => item.SelectedAddIns.Select(addIn => addIn.Name)))
+            .GroupBy(addInName => addInName)
+            .Select(group => new { AddInName = group.Key, Count = group.Count() })
+            .OrderByDescending(group => group.Count)
+            .Take(5);
+
+        var topFiveAddIns = addInCounts.Select(addInCount => new AddInStatistics
+            {
+                AddInName = addInCount.AddInName,
+                TotalQuantitySold = addInCount.Count
+            }).ToList();
+
+        return topFiveAddIns;
+    }
+
+    private List<CoffeeStatistics> GetTopFiveCoffeesMonthly()
+    {
+        var coffeeTypeCounts = OrderService.Orders
+            .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
+            .SelectMany(order => order.Items.Select(item => item.CoffeeType.Name))
+            .GroupBy(coffeeTypeName => coffeeTypeName)
+            .Select(group => new { CoffeeTypeName = group.Key, Count = group.Count() })
+            .OrderByDescending(group => group.Count)
+            .Take(5);
+
+        var topFiveCoffees = coffeeTypeCounts.Select(coffeeTypeCount => new CoffeeStatistics
+            {
+                CoffeeName = coffeeTypeCount.CoffeeTypeName,
+                TotalQuantitySold = coffeeTypeCount.Count
+            }).ToList();
+
+        return topFiveCoffees;
+    }
+
+    private List<AddInStatistics> GetTopFiveAddInsMonthly()
+    {
+        var addInCounts = OrderService.Orders
+            .Where(order => order.OrderDate.Date >= startDate.Date && order.OrderDate.Date <= endDate.Date)
+            .SelectMany(order => order.Items.SelectMany(item => item.SelectedAddIns.Select(addIn => addIn.Name)))
+            .GroupBy(addInName => addInName)
+            .Select(group => new { AddInName = group.Key, Count = group.Count() })
+            .OrderByDescending(group => group.Count)
+            .Take(5);
+
+        var topFiveAddIns = addInCounts.Select(addInCount => new AddInStatistics
+            {
+                AddInName = addInCount.AddInName,
+                TotalQuantitySold = addInCount.Count
+            }).ToList();
+
+        return topFiveAddIns;
+    }
+
+}

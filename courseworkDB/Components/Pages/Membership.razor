@@ -1,0 +1,40 @@
+﻿@attribute [Route(Membership.route)]
+
+@using courseworkDB.Services
+@inject MembershipService membershipService
+
+<h3 class=" p-3">Membership List</h3>
+
+@if (membershipService.Memberships.Any())
+{
+    <table class="table" style="background-color: aquamarine;">
+        <thead>
+            <tr>
+                <th>Customer Username</th>
+                <th>Purchase Count</th>
+                <th>Is Regular Member</th>
+                <th>Last Purchase Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var membership in membershipService.Memberships)
+            {
+                <tr>
+                    <td>@membership.CustomerUsername</td>
+                    <td>@membership.PurchaseCount</td>
+                    <td>@membership.IsRegularMember</td>
+                    <td>@membership.LastPurchaseDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No memberships available.</p>
+}
+
+@code {
+    public const string route = "/membership";
+
+}

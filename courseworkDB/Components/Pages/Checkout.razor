@@ -43,6 +43,10 @@
                     <td colspan="3" style="text-align: right;">Grand Total:</td>
                     <td>Rs @coffeeService.GrandTotal.ToString()</td>
                 </tr>
+                <tr>
+                    <MudButton Color="Color.Tertiary" type="submit" Variant="Variant.Filled" Style=" border-radius: 5px; height: 3rem; font-size:1.2rem; margin-top: 1rem;" @onclick="() => ProcessOrder(coffeeService.Cart, Username)" disabled="@string.IsNullOrWhiteSpace(Username)">ORDER</MudButton>
+
+                </tr>
             </tfoot>
             
         </table>
@@ -86,7 +90,7 @@
         {
             var membership = membershipService.Memberships.First(m => m.CustomerUsername.ToLower() == customerUsername.ToLower());
 
-            var isRegularMember = membershipService.IsRegularMember(membership);
+            bool isRegularMember = membership.IsRegularMember;
 
             membership.PurchaseCount++;
             membership.LastPurchaseDate = DateTime.Now;
@@ -94,31 +98,39 @@
             if (isRegularMember)
             {
                 ApplyRegularMemberDiscount();
-                ProcessOrder(coffeeService.Cart, customerUsername);
-                successMessage = "You are regular Member and discount has been applied.Thank you";
-                Snackbar.Add(successMessage, Severity.Success);
+                //ProcessOrder(coffeeService.Cart, customerUsername);
+                
+            }
+
+            else if (membership.PurchaseCount >= 10)
+            {
+                // Customer is eligible for a complimentary coffee after every 10 purchases
+                RedeemComplimentaryCoffee();
+                
+                //ProcessOrder(coffeeService.Cart, customerUsername);
             }
             else
             {
                 errorMessage = "You are not the regular Member and discount has not been applied.Thank you";
-                
+
                 Snackbar.Add(errorMessage, Severity.Error);
-                
-                ProcessOrder(coffeeService.Cart, customerUsername);
-                
+
+                //ProcessOrder(coffeeService.Cart, customerUsername);
+
             }
             successMessage = "Membership Found. Thank you";
             Snackbar.Add(successMessage, Severity.Success);
+            membershipService.SaveData();
         }
         else
         {  
             errorMessage = "Membership Not Found!! Creating New Membership. Thank you";
-            
+
             CreateMembership(customerUsername);
-            ProcessOrder(coffeeService.Cart, customerUsername);
+            //ProcessOrder(coffeeService.Cart, customerUsername);
             Snackbar.Add(errorMessage, Severity.Error);
-            
-           
+
+
         }
     }
 
@@ -139,13 +151,14 @@
 
     private void ApplyRegularMemberDiscount()
     {
-        // Implement logic to apply a flat 10% discount for the entire month
-        // You can update the cart or perform any other actions as needed
-        foreach (var cartItem in coffeeService.Cart)
-        {
-            cartItem.GrandTotal = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
-        }
-        coffeeService.SaveData();
+        membershipService.ApplyRegularMemberDiscount();
+        Snackbar.Add("Regular membership discount haas been provided. Thank you");
+    }
+
+    private void RedeemComplimentaryCoffee()
+    {
+        membershipService.RedeemComplimentaryCoffee();
+        Snackbar.Add("Complimentary coffee has been Added. Thank you.");
     }
 }
 }

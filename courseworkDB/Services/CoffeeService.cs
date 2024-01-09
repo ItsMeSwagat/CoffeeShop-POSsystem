@@ -219,6 +219,8 @@ namespace courseworkDB.Services
         {
             public List<CoffeeType> CoffeeTypes { get; set; }
             public List<AddIn> AddIns { get; set; }
+            public List<CartItem> Cart { get; set; }
+            public decimal GrandTotal { get; set; }
         }
 
         public List<CoffeeType> CoffeeTypes { get; private set; }
@@ -244,6 +246,8 @@ namespace courseworkDB.Services
                 {
                     CoffeeTypes = savedData.CoffeeTypes ?? new List<CoffeeType>();
                     AddIns = savedData.AddIns ?? new List<AddIn>();
+                    Cart = savedData.Cart ?? new List<CartItem>();
+                    GrandTotal = savedData.GrandTotal;
                 }
             }
         }
@@ -253,7 +257,9 @@ namespace courseworkDB.Services
             SavedData savedData = new SavedData
             {
                 CoffeeTypes = CoffeeTypes,
-                AddIns = AddIns
+                AddIns = AddIns,
+                Cart = Cart,
+                GrandTotal = GrandTotal
             };
 
             string jsonData = JsonSerializer.Serialize(savedData);
@@ -278,6 +284,7 @@ namespace courseworkDB.Services
                 CartId = CartId,
                 GrandTotal = GrandTotal
             });
+            SaveData();
         }
 
         public void RemoveItemFromCart(Guid CartId)
@@ -292,6 +299,7 @@ namespace courseworkDB.Services
             {
                 // Handle item not found
             }
+            SaveData();
         }
 
         public void ResetCart()

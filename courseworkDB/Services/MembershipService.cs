@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace courseworkDB.Services
 {
@@ -27,22 +22,22 @@ namespace courseworkDB.Services
 
             if (existingMembership != null)
             {
-                
+
                 existingMembership.PurchaseCount++;
                 existingMembership.LastPurchaseDate = DateTime.Now;
 
                 if (existingMembership.PurchaseCount % 10 == 0)
                 {
                     // Customer is eligible for a complimentary coffee after every 10 purchases
-                    
-                    RedeemComplimentaryCoffee(existingMembership.CustomerUsername);
+
+                    RedeemComplimentaryCoffee();
                 }
 
                 if (IsRegularMember(existingMembership))
                 {
                     // Customer is a regular member, provide a flat 10% discount for the entire month
-                    
-                    ApplyRegularMemberDiscount(existingMembership.CustomerUsername);
+
+                    ApplyRegularMemberDiscount();
                 }
             }
             else
@@ -97,24 +92,26 @@ namespace courseworkDB.Services
             return false;
         }
 
-        private void ApplyRegularMemberDiscount(string customerUsername)
+        public void ApplyRegularMemberDiscount()
         {
-            
-            var coffeeService = new CoffeeService(); 
+
+            var coffeeService = new CoffeeService();
             foreach (var cartItem in coffeeService.Cart)
             {
                 cartItem.GrandTotal = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
-                
+
             }
-            coffeeService.SaveData();
+
+            coffeeService.GrandTotal = decimal.Round(coffeeService.GrandTotal * 0.9m, 2);
+            coffeeService.SaveData(); 
         }
 
-        private void RedeemComplimentaryCoffee(string customerUsername)
+        public void RedeemComplimentaryCoffee()
         {
-           
-            var coffeeService = new CoffeeService(); 
-            var complimentaryCoffee = coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Black Coffee");
 
+            var coffeeService = new CoffeeService();
+            var complimentaryCoffee = coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Black Coffee");
+            
             if (complimentaryCoffee != null)
             {
                 // Add the complimentary coffee to the cart
