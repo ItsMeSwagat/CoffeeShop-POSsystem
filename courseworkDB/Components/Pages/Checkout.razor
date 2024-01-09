@@ -88,13 +88,15 @@
 
             var isRegularMember = membershipService.IsRegularMember(membership);
 
+            membership.PurchaseCount++;
+            membership.LastPurchaseDate = DateTime.Now;
+
             if (isRegularMember)
             {
                 ApplyRegularMemberDiscount();
                 ProcessOrder(coffeeService.Cart, customerUsername);
                 successMessage = "You are regular Member and discount has been applied.Thank you";
                 Snackbar.Add(successMessage, Severity.Success);
-                
             }
             else
             {

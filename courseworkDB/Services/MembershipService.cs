@@ -27,21 +27,21 @@ namespace courseworkDB.Services
 
             if (existingMembership != null)
             {
-                // Update existing membership
+                
                 existingMembership.PurchaseCount++;
                 existingMembership.LastPurchaseDate = DateTime.Now;
 
                 if (existingMembership.PurchaseCount % 10 == 0)
                 {
                     // Customer is eligible for a complimentary coffee after every 10 purchases
-                    // Implement logic to redeem a complimentary coffee
+                    
                     RedeemComplimentaryCoffee(existingMembership.CustomerUsername);
                 }
 
                 if (IsRegularMember(existingMembership))
                 {
                     // Customer is a regular member, provide a flat 10% discount for the entire month
-                    // Implement logic to apply the discount (e.g., update the cart)
+                    
                     ApplyRegularMemberDiscount(existingMembership.CustomerUsername);
                 }
             }
@@ -99,9 +99,8 @@ namespace courseworkDB.Services
 
         private void ApplyRegularMemberDiscount(string customerUsername)
         {
-            // Implement logic to apply a flat 10% discount for the entire month
-            // You can update the cart or perform any other actions as needed
-            var coffeeService = new CoffeeService(); // You might want to inject this instead of creating a new instance
+            
+            var coffeeService = new CoffeeService(); 
             foreach (var cartItem in coffeeService.Cart)
             {
                 cartItem.GrandTotal = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
@@ -112,9 +111,9 @@ namespace courseworkDB.Services
 
         private void RedeemComplimentaryCoffee(string customerUsername)
         {
-            // logic to redeem a complimentary coffee after every 10 purchases
-            var coffeeService = new CoffeeService(); // You might want to inject this instead of creating a new instance
-            var complimentaryCoffee = coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Complimentary Coffee");
+           
+            var coffeeService = new CoffeeService(); 
+            var complimentaryCoffee = coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Black Coffee");
 
             if (complimentaryCoffee != null)
             {
