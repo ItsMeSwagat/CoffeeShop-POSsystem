@@ -1,0 +1,48 @@
+﻿@attribute [Route(Coffee.Route)]
+
+@using MudBlazor
+@using courseworkDB.Services
+
+@inject IDialogService DialogService
+@inject AuthenticationService Authservice
+
+
+<h2 class=" p-3">Coffee</h2>
+
+<MudGrid Class="py-3 px-2">
+        @foreach (var coffeeType in coffeeService.CoffeeTypes)
+        {
+            <MudItem>
+                <MudPaper Height="19rem" Width="15rem" Elevation="4" Style="border-radius: 10px;">
+                    <MudCard Outlined="true" Elevation="4" Class="w-100 h-100" Style="border-radius: 10px;">
+                        <MudCardMedia Image="@coffeeType.ImageUrl" Height="150" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">@coffeeType.Name</MudText>
+                                <MudText Typo="Typo.body1">Rs @coffeeType.Price</MudText>
+                            </MudCardContent>
+                            <MudCardActions Class="">
+                                @if(Authservice.AuthenticatedUser == "Admin")
+                                {
+                            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="w-100" OnClick="() => OpenEditCoffeePriceDialog(coffeeType)">EDIT</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="w-100" OnClick="() => OpenEditCoffeePriceDialog(coffeeType)" Disabled>EDIT</MudButton>
+                        }
+                            
+                            </MudCardActions>
+                        </MudCard>
+                    </MudPaper>
+                </MudItem>
+                <MudItem>
+                    
+                
+                </MudItem>
+        }
+        
+      
+    </MudGrid>
+
+@code {
+
+}

@@ -1,0 +1,21 @@
+﻿@page "/"
+
+@using courseworkDB.Services
+
+@inject NavigationManager NavManager
+@inject AuthenticationService authService
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!authService.IsAuthenticated)
+        {
+            NavManager.NavigateTo("/loginpassword");
+        }
+        else
+        {
+            NavManager.NavigateTo("/dashboard");
+        }
+    }
+}

@@ -1,0 +1,36 @@
+﻿@using MudBlazor
+@using courseworkDB.Services
+
+@inject AuthenticationService AuthService
+
+<MudPaper Width="100%" Height="100vh" Class="py-5">
+    <MudNavMenu Color= "Color.Tertiary" Class=" d-flex flex-column gap-3">
+        <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+
+
+        @if (AuthService.IsAuthenticatedAdmin)
+        {
+            <MudNavLink Href="/coffee" Icon="@Icons.Material.Filled.Coffee">Coffee</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="/passwordprotectioncoffee" Icon="@Icons.Material.Filled.Coffee">Coffee</MudNavLink>
+        }
+
+        @if (AuthService.IsAuthenticatedAdmin)
+        {
+            <MudNavLink Href="/addins" Icon="@Icons.Material.Filled.AddBox">Add Ins</MudNavLink>
+        }
+        else
+        {
+            <MudNavLink Href="/passwordprotectionaddin" Icon="@Icons.Material.Filled.AddBox">Add Ins</MudNavLink>
+        }
+        
+        <MudNavLink Href="/orderreport" Icon="@Icons.Material.Filled.InsertDriveFile">Order Report</MudNavLink>
+        <MudNavLink Href="/report" Icon="@Icons.Material.Filled.InsertDriveFile">Report</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
+
+@code {
+
+}

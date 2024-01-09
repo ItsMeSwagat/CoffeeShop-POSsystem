@@ -1,0 +1,43 @@
+﻿@attribute [Route(AddIns.Route)]
+
+@using MudBlazor
+@using courseworkDB.Services
+
+@inject IDialogService DialogService
+@inject AuthenticationService AuthService
+
+
+
+<div class=" py-3 px-3">
+            <h1 class=" p-2">Add Ins</h1>
+            <MudGrid>
+                <MudItem>
+                    <div class=" d-flex gap-3">
+                        
+                        @foreach (var addIn in coffeeService.AddIns)
+                        {
+                            <div style="background-color:#1ec8a5; width: 15rem; height: 4rem; border-radius:10px;" class=" d-flex justify-content-around align-items-center border-3">
+                                @*<input type="checkbox" value="@addIn" @bind="@addIn.Selected" class=" fw-bold" /> @addIn.Name <br/> Rs @addIn.Price *@
+                                <MudCheckBox @bind-Value="@addIn.Selected" Size="Size.Medium" Color="Color.Surface" Class=" d-flex" Disabled>
+                                    <span class=" fw-bold text-white">@addIn.Name</span><br />
+                                    <span class=" fw-bold text-white">Rs @addIn.Price</span>
+                                </MudCheckBox>
+                                @if (AuthService.AuthenticatedUser == "Admin")
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" @onclick="() => OpenEditAddInPriceDialog(addIn)" Class="">EDIT</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" @onclick="() => OpenEditAddInPriceDialog(addIn)" Disabled Class="">EDIT</MudButton>
+                        }
+                    </div>
+                            
+                        }
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </div>
+
+@code {
+
+}

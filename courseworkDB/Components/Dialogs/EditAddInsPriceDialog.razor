@@ -1,0 +1,42 @@
+﻿@using MudBlazor;
+@using courseworkDB.Services;
+@inject NavigationManager NavigationManager;
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Update" Class="mr-3 mb-n1" />
+            UPDATE PRICE
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="AddIn.Name" Label="AddIn Name" Disabled/>
+        <MudTextField @bind-Value="newAddInPrice" Label="Enter New AddIn Price" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton @onclick="UpdatePrice">Update</MudButton>
+        <MudButton Color="Color.Error" @onclick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Inject]
+    private CoffeeService coffeeService { get; set; }
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public CoffeeService.AddIn AddIn { get; set; }
+
+    decimal newAddInPrice;
+
+    private void UpdatePrice()
+    {
+        coffeeService.EditAddInPrice(AddIn, newAddInPrice);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

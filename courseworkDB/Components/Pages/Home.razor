@@ -1,0 +1,149 @@
+﻿@attribute [Route(Home.Route)]
+
+@using Microsoft.AspNetCore.Authorization
+@using courseworkDB.Services
+@using MudBlazor
+
+@inject ISnackbar Snackbar
+@inject NavigationManager NavManager
+@inject AuthenticationService authService
+
+
+
+<div class=" d-flex w-100 h-100">
+    <div class=" d-flex flex-column">
+        <div>
+            
+            <MudGrid Class="py-3 px-2">
+                
+                @foreach (var coffeeType in coffeeService.CoffeeTypes)
+                {
+                    <MudItem>
+                        <MudPaper Height="19rem" Width="15rem" Elevation="4" Style="border-radius: 10px;">
+                            <MudCard Outlined="true" Elevation="4" Class="w-100 h-100" Style="border-radius: 10px;">
+                                <MudCardMedia Image="@coffeeType.ImageUrl" Height="150" />
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h5">@coffeeType.Name</MudText>
+                                        <MudText Typo="Typo.body1">Rs @coffeeType.Price</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions Class="">
+                                        <MudNumericField @bind-Value="coffeeType.Quantity" Min="1" Max="10" Increment="1" ShowButtons="false" Style=" width: 3.5rem; height: 2rem; margin-bottom:1rem;" />
+                                        <MudButton Variant="Variant.Filled" Color="Color.Tertiary" Class="w-100" @onclick="() => AddToCart(coffeeType, selectedAddIns)">ADD</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudPaper>
+                        </MudItem>
+                    <MudItem>
+
+
+                    </MudItem>
+                }
+            </MudGrid>
+        </div>
+        <div class=" py-3 px-3">
+            <h1 class=" p-2">Add Ins</h1>
+            <MudGrid>
+                <MudItem>
+                    <div class=" d-flex gap-3">
+                        
+                        @foreach (var addIn in coffeeService.AddIns)
+                        {
+                            <div style="background-color:#1ec8a5; width: 10rem; height: 3rem; border-radius:10px;" class=" d-flex justify-content-center align-items-center">
+                                @*<input type="checkbox" value="@addIn" @bind="@addIn.Selected" class=" fw-bold" /> @addIn.Name <br/> Rs @addIn.Price *@
+                                <MudCheckBox @bind-Value="@addIn.Selected" Size="Size.Medium" Color="Color.Surface" Class=" d-flex">
+                                    <span class=" fw-bold text-white">@addIn.Name</span><br />
+                                    <span class=" fw-bold text-white">Rs @addIn.Price</span>
+                                </MudCheckBox>
+                            </div>
+                        }
+                    </div>
+                </MudItem>
+            </MudGrid>
+        </div>
+    </div>
+    
+
+    
+
+    @*<MudPaper Height="100%" Width="450px">
+        <MudContainer>
+            <MudDataGrid Items="@coffeeService.Cart" Filterable="false" SortMode="@SortMode.None" Groupable="false" >
+                <Columns>
+                    <PropertyColumn Property="x => x.Item1.Name" Header="Coffee Type" />
+                    <PropertyColumn Property="x => x.Item2" Header="Add Ins"  />
+                    <PropertyColumn Property="x => x.Item3" Title="Quantity" />
+                    <PropertyColumn Property="x => x.Item4" Title="Total Price" Format="C" />
+                
+                </Columns>
+            </MudDataGrid>
+        
+         <MudButton Variant="Variant.Filled" Color="Color.Error" Class="w-100">Remove</MudButton>
+          
+        </MudContainer>
+    </MudPaper> *@
+
+    <MudPaper Height="100%" Width="500px" Style=" background-color:aquamarine; margin: .5rem; padding: 0.5rem;">
+        
+            <table class="table" style="">
+                <thead>
+                    <tr >
+                    <th style=" padding: .8rem;">CoffeeType</th>
+                        <th style="padding: .8rem;" >AddIns</th>
+                    <th style="padding: .8rem;">Quantity</th>
+                    <th style="padding: .8rem;">TotalPrice</th>
+                    <th style="padding: .8rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in coffeeService.Cart)
+                    {
+                        <tr>
+                            <td>@item.CoffeeType.Name</td>
+                            <td>
+                                @foreach (var addIn in item.SelectedAddIns)
+                                {
+                                    <p> @addIn.Name</p>
+                                    <p>Rs @addIn.Price</p>
+                                    }
+                            </td>
+                            <td>@item.Quantity</td>
+                            <td><p>Rs @item.TotalPrice.ToString()</p></td>
+                            <td>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" @onclick=" () => RemoveItem(item.CartId) "></MudIconButton>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <th colspan="3" style="text-align: right;">Grand Total:</th>
+                    <th>Rs @coffeeService.GrandTotal.ToString()</th>
+                </tfoot>
+            </table>
+
+        <MudButton Variant="Variant.Filled" Color="Color.Tertiary" @onclick="ConfirmOrder" Disabled="@(!coffeeService.Cart.Any())" Class="w-100">CONFIRM ORDER</MudButton>
+        
+    </MudPaper>
+
+</div>
+
+@code {
+    private async Task ConfirmOrder()
+    {
+        if (coffeeService.Cart.Any())
+        {
+            // Navigate to the checkout page
+            NavManager.NavigateTo("/checkout");
+        }
+        else
+        {
+            // Display a message if the cart is empty
+            Snackbar.Add("Your cart is empty. Add items before confirming the order.", Severity.Error);
+        }
+    }
+   
+
+    
+}
+
+
+

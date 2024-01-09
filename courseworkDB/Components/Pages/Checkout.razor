@@ -1,0 +1,149 @@
+﻿@attribute [Route(Checkout.route)]
+@using MudBlazor
+@using courseworkDB.Services
+
+@inject OrderService orderService
+@inject MembershipService membershipService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+
+<h3>Checkout</h3>
+
+<div class=" d-flex w-100 h-100 gap-5">
+    <div>
+        <h4>Your Cart</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Coffee Type</th>
+                    <th>Add-Ins</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cartItem in coffeeService.Cart)
+                {
+                    <tr>
+                        <td>@cartItem.CoffeeType.Name</td>
+                        <td>
+                            @foreach (var addIn in cartItem.SelectedAddIns)
+                            {
+                                <p>@addIn.Name</p>
+                            }
+                        </td>
+                        <td>@cartItem.Quantity</td>
+                        <td>Rs @cartItem.TotalPrice.ToString()</td>
+                        
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;">Grand Total:</td>
+                    <td>Rs @coffeeService.GrandTotal.ToString()</td>
+                </tr>
+            </tfoot>
+            
+        </table>
+    </div>
+    <div class="">
+        
+            <MudInputLabel Style=" font-family: Poppins; font-weight: bolder; font-size: 1.3rem;">Membership</MudInputLabel>
+            <InputText @bind-Value="Username" type="text" placeholder="Enter UserName/Phone Number" class=" input-group-text" style=" outline: none; border-radius: 5px; font-size: 1.2rem; height: 3rem; width: 20rem;" />
+            
+            <MudButton Color="Color.Tertiary" type="submit" Variant="Variant.Filled" Style=" border-radius: 5px; height: 3rem; font-size:1.2rem; margin-top: 1rem;" @onclick="CheckMembership">CHECK MEMBERSHIP</MudButton>
+        
+    </div>
+</div>
+
+@code {
+    public const string route = "/checkout";
+    private string Username = string.Empty;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private string orderSuccessMessage = string.Empty;
+
+
+    [Inject]
+    private CoffeeService coffeeService { get; set; }
+
+
+    private void CreateMembership(string customerUsername)
+    {
+        // Create a new membership for the customer
+        membershipService.CreateMembership(customerUsername);
+
+
+    }
+
+    private void CheckMembership()
+    {
+        var customerUsername = Username;
+        var hasMembership = membershipService.Memberships.Any(m => m.CustomerUsername.ToLower() == customerUsername.ToLower());
+
+        if (hasMembership)
+        {
+            var membership = membershipService.Memberships.First(m => m.CustomerUsername.ToLower() == customerUsername.ToLower());
+
+            var isRegularMember = membershipService.IsRegularMember(membership);
+
+            if (isRegularMember)
+            {
+                ApplyRegularMemberDiscount();
+                ProcessOrder(coffeeService.Cart, customerUsername);
+                successMessage = "You are regular Member and discount has been applied.Thank you";
+                Snackbar.Add(successMessage, Severity.Success);
+                
+            }
+            else
+            {
+                errorMessage = "You are not the regular Member and discount has not been applied.Thank you";
+                
+                Snackbar.Add(errorMessage, Severity.Error);
+                
+                ProcessOrder(coffeeService.Cart, customerUsername);
+                
+            }
+            successMessage = "Membership Found. Thank you";
+            Snackbar.Add(successMessage, Severity.Success);
+        }
+        else
+        {  
+            errorMessage = "Membership Not Found!! Creating New Membership. Thank you";
+            
+            CreateMembership(customerUsername);
+            ProcessOrder(coffeeService.Cart, customerUsername);
+            Snackbar.Add(errorMessage, Severity.Error);
+            
+           
+        }
+    }
+
+    private void ProcessOrder(List<CoffeeService.CartItem> cartItems, string customerUsername)
+    {
+        // Call the ProcessOrder method in the OrderService
+        orderService.ProcessOrder(cartItems, customerUsername);
+
+        // Clear the cart
+        coffeeService.ResetCart();
+
+        // Navigate to the dashboard
+        NavManager.NavigateTo("/dashboard");
+
+        Snackbar.Add("Order Placed. Thank you for your purchase!", Severity.Success);
+    }
+
+
+    private void ApplyRegularMemberDiscount()
+    {
+        // Implement logic to apply a flat 10% discount for the entire month
+        // You can update the cart or perform any other actions as needed
+        foreach (var cartItem in coffeeService.Cart)
+        {
+            cartItem.GrandTotal = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
+        }
+        coffeeService.SaveData();
+    }
+}
+}
