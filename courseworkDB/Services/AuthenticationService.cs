@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,8 +80,15 @@ namespace courseworkDB.Services
             return isValidAdmin;
         }
 
+        public void Logout()
+        {
+            _isAuthenticated = false;
+            _isAuthenticatedAdmin = false;
+            _authenticatedUser = string.Empty;
+            _errorMessage = string.Empty;
+        }
 
-
+        
 
         private async Task<bool> SecureEditPricePasswordValidation(string password)
         {

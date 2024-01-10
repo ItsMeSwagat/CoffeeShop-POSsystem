@@ -4,6 +4,7 @@
 
 @inject OrderService orderService
 @inject MembershipService membershipService
+@inject CoffeeService coffeeService
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
 
@@ -69,10 +70,6 @@
     private string orderSuccessMessage = string.Empty;
 
 
-    [Inject]
-    private CoffeeService coffeeService { get; set; }
-
-
     private void CreateMembership(string customerUsername)
     {
         // Create a new membership for the customer
@@ -98,16 +95,16 @@
             if (isRegularMember)
             {
                 ApplyRegularMemberDiscount();
-                //ProcessOrder(coffeeService.Cart, customerUsername);
+                
                 
             }
 
-            else if (membership.PurchaseCount >= 10)
+            if (membership.PurchaseCount >= 10)
             {
-                // Customer is eligible for a complimentary coffee after every 10 purchases
+                
                 RedeemComplimentaryCoffee();
                 
-                //ProcessOrder(coffeeService.Cart, customerUsername);
+                
             }
             else
             {
@@ -115,7 +112,7 @@
 
                 Snackbar.Add(errorMessage, Severity.Error);
 
-                //ProcessOrder(coffeeService.Cart, customerUsername);
+               
 
             }
             successMessage = "Membership Found. Thank you";
@@ -127,7 +124,7 @@
             errorMessage = "Membership Not Found!! Creating New Membership. Thank you";
 
             CreateMembership(customerUsername);
-            //ProcessOrder(coffeeService.Cart, customerUsername);
+            
             Snackbar.Add(errorMessage, Severity.Error);
 
 
@@ -152,7 +149,7 @@
     private void ApplyRegularMemberDiscount()
     {
         membershipService.ApplyRegularMemberDiscount();
-        Snackbar.Add("Regular membership discount haas been provided. Thank you");
+        Snackbar.Add("Regular membership 10% discount haas been provided. Thank you");
     }
 
     private void RedeemComplimentaryCoffee()
@@ -160,5 +157,4 @@
         membershipService.RedeemComplimentaryCoffee();
         Snackbar.Add("Complimentary coffee has been Added. Thank you.");
     }
-}
 }

@@ -1,9 +1,17 @@
 ﻿using System.Text.Json;
 
+
+
 namespace courseworkDB.Services
 {
     public class MembershipService
     {
+        private CoffeeService _coffeeService;
+
+        public MembershipService(CoffeeService coffeeService)
+        {
+            _coffeeService = coffeeService;
+        }
         public class Membership
         {
             public string CustomerUsername { get; set; }
@@ -94,29 +102,31 @@ namespace courseworkDB.Services
 
         public void ApplyRegularMemberDiscount()
         {
-
-            var coffeeService = new CoffeeService();
-            foreach (var cartItem in coffeeService.Cart)
+            
+            foreach (var cartItem in _coffeeService.Cart)
             {
-                cartItem.GrandTotal = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
+                cartItem.TotalPrice = decimal.Round(cartItem.TotalPrice * 0.9m, 2); // Apply a 10% discount
 
             }
 
-            coffeeService.GrandTotal = decimal.Round(coffeeService.GrandTotal * 0.9m, 2);
-            coffeeService.SaveData(); 
+            
+            _coffeeService.GrandTotal = _coffeeService.Cart.Sum(cartItem => cartItem.TotalPrice);
+
+            _coffeeService.SaveData();
+
+
         }
 
         public void RedeemComplimentaryCoffee()
         {
-
-            var coffeeService = new CoffeeService();
-            var complimentaryCoffee = coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Black Coffee");
+            var complimentaryCoffee = _coffeeService.CoffeeTypes.FirstOrDefault(c => c.Name == "Black Coffee");
             
             if (complimentaryCoffee != null)
             {
                 // Add the complimentary coffee to the cart
-                coffeeService.AddToCart(complimentaryCoffee, new List<CoffeeService.AddIn>(), 1);
+                _coffeeService.AddToCart(complimentaryCoffee, new List<CoffeeService.AddIn>(), 1);
             }
+            _coffeeService.SaveData();
         }
 
         public void SaveData()

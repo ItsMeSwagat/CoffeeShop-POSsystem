@@ -34,7 +34,8 @@ namespace courseworkDB
             });
             builder.Services.AddSingleton<MembershipService>(sp =>
             {
-                var membershipService = new MembershipService();
+                var coffeeService = sp.GetRequiredService<CoffeeService>();
+                var membershipService = new MembershipService(coffeeService);
                 membershipService.LoadData();  // Load data when the service is instantiated
                 return membershipService;
             });

@@ -1,7 +1,9 @@
 ﻿@using MudBlazor
 @using courseworkDB.Services
 
+@inject NavigationManager NavManager
 @inject AuthenticationService AuthService
+@inject ISnackbar Snackbar
 
 <MudPaper Width="100%" Height="100vh" Class="py-5">
     <MudNavMenu Color= "Color.Tertiary" Class=" d-flex flex-column gap-3">
@@ -29,9 +31,19 @@
         <MudNavLink Href="/orderreport" Icon="@Icons.Material.Filled.InsertDriveFile">Orders Report</MudNavLink>
         <MudNavLink Href="/membership" Icon="@Icons.Material.Filled.InsertDriveFile">Membership</MudNavLink>
         <MudNavLink Href="/generatereport" Icon="@Icons.Material.Filled.InsertDriveFile">Generate Report</MudNavLink>
+        <MudButton Color="Color.Tertiary" Variant="Variant.Filled" Style=" border-radius: 5px; height: 2.5rem; font-size:1.2rem; margin-top: 1rem;" Class=" mx-2" @onclick="Logout">LOGOUT</MudButton>
     </MudNavMenu>
 </MudPaper>
 
 @code {
+    private string successMessage = string.Empty;
 
+    void Logout()
+    {
+        AuthService.Logout();
+        successMessage = "Logout Successful.Thank you";
+
+        Snackbar.Add(successMessage, Severity.Success);
+        NavManager.NavigateTo("/loginpassword");
+    }
 }

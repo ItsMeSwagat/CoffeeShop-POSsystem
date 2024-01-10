@@ -37,7 +37,7 @@ namespace courseworkDB.Services
                     CustomerUsername = customerUsername,
 
                     Items = new List<CoffeeService.CartItem>(cartItems),
-                    TotalPrice = cartItems.Sum(item => item.GrandTotal)
+                    TotalPrice = cartItems.Sum(item => item.TotalPrice)
                 };
 
                 Orders.Add(order);

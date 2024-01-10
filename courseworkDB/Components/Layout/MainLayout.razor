@@ -1,8 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using courseworkDB.Services
 @using courseworkDB.Components.Layout
 
 @inject NavigationManager NavManager
+@inject AuthenticationService authService
 
 
 <MudThemeProvider/>
@@ -10,9 +12,10 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Color="Color.Tertiary">
+    <MudAppBar Color="Color.Tertiary" Class="">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText style=" font-size: 2rem;">BISLERIUM CAFE</MudText>
+        
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
        <NavMenu/>
@@ -29,4 +32,6 @@
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    
 }
