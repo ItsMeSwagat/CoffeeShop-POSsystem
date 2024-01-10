@@ -125,6 +125,14 @@ namespace courseworkDB.Services
             {
                 // Add the complimentary coffee to the cart
                 _coffeeService.AddToCart(complimentaryCoffee, new List<CoffeeService.AddIn>(), 1);
+
+                // Reset the TotalPrice of the complimentary coffee in the cart to 0
+                var cartItem = _coffeeService.Cart.FirstOrDefault(item => item.CoffeeType.Name == "Black Coffee");
+                if (cartItem != null)
+                {
+                    cartItem.TotalPrice = 0;
+                    _coffeeService.GrandTotal = _coffeeService.Cart.Sum(cartItem => cartItem.TotalPrice);
+                }
             }
             _coffeeService.SaveData();
         }
