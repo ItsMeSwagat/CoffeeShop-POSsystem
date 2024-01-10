@@ -34,7 +34,8 @@
     private void UpdatePrice()
     {
         coffeeService.EditCoffeePrice(CoffeeType, newCoffeePrice);
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        coffeeService.SaveData();
+        //NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         MudDialog.Close(DialogResult.Ok(true));
     }
 

@@ -7,166 +7,6 @@ using static MudBlazor.CategoryTypes;
 
 namespace courseworkDB.Services
 {
-    /* public class CoffeeService
-     {
-         public decimal GrandTotal { get; private set; } = 0;
-         public class CoffeeType
-         {
-             public string Name { get; set; }
-             public decimal Price { get; set; }
-             public string ImageUrl { get; set; }
-             public int Quantity { get; set; }
-
-             public CoffeeType(string name, decimal price, string imageUrl, int quantity)
-             {
-                 Name = name;
-                 Price = price;
-                 ImageUrl = imageUrl;
-                 Quantity = quantity;
-             }
-         }
-
-         public class AddIn
-         {
-             public string Name { get; set; }
-
-             public decimal Price { get; set; }
-
-             public bool Selected { get; set; }
-
-             public AddIn(string name, decimal price, bool selected)
-             {
-                 Name = name;
-                 Price = price;
-                 Selected = selected;
-             }
-
-         }
-
-
-         public List<CoffeeType> CoffeeTypes { get; private set; }
-         public List<AddIn> AddIns { get; private set; }
-         public List< (CoffeeType,List<AddIn>, int, decimal, decimal, Guid)> Cart { get; private set; } = new List<(CoffeeType, List<AddIn>, int, decimal, decimal, Guid)>();
-
-         public CoffeeService()
-         {
-             // Initialize coffee types
-             CoffeeTypes = new List<CoffeeType>
-             {
-                 new CoffeeType("Black Coffee", 150, "Images/black.jpg",0),
-                 new CoffeeType("Americano Coffee", 550, "Images/americano.jpg",0),
-                 new CoffeeType("Cappuccino Coffee", 550, "Images/cappuccino.jpg", 0),
-                 new CoffeeType("Cappuccino Coffee", 550, "Images/cappuccino.jpg", 0),
-                 // Add more coffee types as needed
-             };
-
-             // Initialize add-ins
-             AddIns = new List<AddIn>
-             {
-                 new AddIn("Cinnamon", 50, false),
-                 new AddIn("Honey", 100, false),
-                 new AddIn("Ginger", 60, false),
-                 // Add more add-ins as needed
-             };
-         }
-
-
-
-
-         public void AddToCart(CoffeeType coffeeType, List<AddIn> selectedAddIns, int quantity)
-         {
-             var CartId = Guid.NewGuid();
-             var totalAddInsPrice = selectedAddIns.Sum(addIn => addIn.Price);
-
-             var totalCoffeePrice = coffeeType.Price * quantity;
-             var totalPrice = totalCoffeePrice + totalAddInsPrice;
-             GrandTotal += totalPrice; 
-
-             Cart.Add((coffeeType, selectedAddIns, coffeeType.Quantity, totalPrice, GrandTotal, CartId));
-         }
-
-         public void RemoveItemFromCart(Guid CartId)
-         {
-             var cartItem = Cart.FirstOrDefault(item => item.Item6 == CartId);
-             if (cartItem != default)
-             {
-                 Cart.Remove(cartItem);
-                 GrandTotal -= cartItem.Item4; 
-             }
-             else
-             {
-                 // Handle item not found
-             }
-         }
-
-         public void EditCoffeePrice(CoffeeType coffeeType, decimal newPrice)
-         {
-
-             // Find the coffee type in the CoffeeTypes list
-             var coffeeTypeIndex = CoffeeTypes.FindIndex(ct => ct.Name == coffeeType.Name);
-             if (coffeeTypeIndex != -1)
-             {
-                 // Update the price
-                 CoffeeTypes[coffeeTypeIndex].Price = newPrice;
-
-                 // Recalculate cart totals for affected items
-                 foreach (var cartItem in Cart)
-                 {
-                     var modifiableCartItem = cartItem;
-                     if (cartItem.Item1.Name == coffeeType.Name)
-                     {
-                         modifiableCartItem.Item4 = (cartItem.Item1.Price * cartItem.Item3) + cartItem.Item2.Sum(addIn => addIn.Price);
-                         GrandTotal += cartItem.Item4; // Accumulate total price changes
-                     }
-                 }
-             }
-             else
-             {
-                 // Handle coffee type not found
-             }
-         }
-
-         public void EditAddInPrice(AddIn addIn, decimal newPrice)
-         {
-             // Find the add-in in the AddIns list
-             var addInIndex = AddIns.FindIndex(ai => ai.Name == addIn.Name);
-             if (addInIndex != -1)
-             {
-                 // Update the price
-                 AddIns[addInIndex].Price = newPrice;
-
-                 // Recalculate cart totals for affected items
-                 foreach (var cartItem in Cart)
-                 {
-                     var modifiableCartItem = cartItem;
-                     var updatedTotalPrice = cartItem.Item1.Price * cartItem.Item3;
-                     foreach (var addInInCart in cartItem.Item2)
-                     {
-                         if (addInInCart.Name == addIn.Name)
-                         {
-                             updatedTotalPrice += newPrice; // Use the updated price
-                         }
-                         else
-                         {
-                             updatedTotalPrice += addInInCart.Price;
-                         }
-                     }
-
-                     modifiableCartItem.Item4 = updatedTotalPrice;
-                     GrandTotal += cartItem.Item4 - cartItem.Item5; // Account for previous total
-                 }
-
-             }
-             else
-             {
-                 // Handle add-in not found
-             }
-         }
-
-
-     } */
-
-    //new
     
     public class CoffeeService
     {
@@ -234,7 +74,7 @@ namespace courseworkDB.Services
             LoadData();
         }
 
-        public void LoadData()
+        public void LoadData() //loads the data from json file
         {
             InitializeDefaultData();
             SaveData();
@@ -252,7 +92,7 @@ namespace courseworkDB.Services
             }
         }
 
-        internal void SaveData()
+        internal void SaveData() //saves the data to json file.
         {
             SavedData savedData = new SavedData
             {
@@ -266,7 +106,7 @@ namespace courseworkDB.Services
             File.WriteAllText(CoffeeDataFilePath, jsonData);
         }
 
-        public void AddToCart(CoffeeType coffeeType, List<AddIn> selectedAddIns, int quantity)
+        public void AddToCart(CoffeeType coffeeType, List<AddIn> selectedAddIns, int quantity) // adds the item to cart
         {
             var CartId = Guid.NewGuid();
             var totalAddInsPrice = selectedAddIns.Sum(addIn => addIn.Price);
@@ -287,7 +127,7 @@ namespace courseworkDB.Services
             SaveData();
         }
 
-        public void RemoveItemFromCart(Guid CartId)
+        public void RemoveItemFromCart(Guid CartId) //removes items from cart
         {
             var cartItem = Cart.FirstOrDefault(item => item.CartId == CartId);
             if (cartItem != default)
@@ -297,12 +137,12 @@ namespace courseworkDB.Services
             }
             else
             {
-                // Handle item not found
+                
             }
             SaveData();
         }
 
-        public void ResetCart()
+        public void ResetCart() 
         {
             // Clear the cart
             Cart.Clear();
@@ -310,7 +150,7 @@ namespace courseworkDB.Services
             SaveData();
         }
 
-        public void EditCoffeePrice(CoffeeType coffeeType, decimal newPrice)
+        public void EditCoffeePrice(CoffeeType coffeeType, decimal newPrice) //Edits the coffee price and saves it to json file
         {
             var coffeeToUpdate = CoffeeTypes.FirstOrDefault(ct => ct.Name == coffeeType.Name);
             if (coffeeToUpdate != null)
@@ -321,7 +161,7 @@ namespace courseworkDB.Services
             }
         }
 
-        public void EditAddInPrice(AddIn addIn, decimal newPrice)
+        public void EditAddInPrice(AddIn addIn, decimal newPrice) //edits the addin price.
         {
             var addInToUpdate = AddIns.FirstOrDefault(ai => ai.Name == addIn.Name);
             if (addInToUpdate != null)
@@ -335,7 +175,7 @@ namespace courseworkDB.Services
 
         private void InitializeDefaultData()
         {
-            // Initialize coffee types
+            // Initialized coffee types
             CoffeeTypes = new List<CoffeeType>
             {
                 new CoffeeType("Black Coffee", 150, "Images/black.jpg", 1),
@@ -343,17 +183,17 @@ namespace courseworkDB.Services
                 new CoffeeType("Cappuccino Coffee", 450, "Images/cappuccino.jpg", 1),
                 new CoffeeType("Cortadito Coffee", 550, "Images/Cortadito.jpg", 1),
                 new CoffeeType("Expresso Coffee", 650, "Images/Expresso.png", 1),
-                // Add more coffee types as needed
+                
             };
 
-            // Initialize add-ins
+            // Initialized add-ins
             AddIns = new List<AddIn>
             {
                 new AddIn("Cinnamon", 50, false),
                 new AddIn("Honey", 100, false),
                 new AddIn("Ginger", 60, false),
                 new AddIn("Ice Cream", 150, false),
-                // Add more add-ins as needed
+                
             };
         }
     }

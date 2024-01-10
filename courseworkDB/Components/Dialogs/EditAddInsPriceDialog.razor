@@ -19,7 +19,7 @@
     </DialogActions>
 </MudDialog>
 
-@code {
+ @code {
     [Inject]
     private CoffeeService coffeeService { get; set; }
 
@@ -31,7 +31,8 @@
     private void UpdatePrice()
     {
         coffeeService.EditAddInPrice(AddIn, newAddInPrice);
-        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+        coffeeService.SaveData();
+        //NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
         MudDialog.Close(DialogResult.Ok(true));
     }
 
